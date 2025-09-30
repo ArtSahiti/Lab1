@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Row, Col, Card, Button, Badge, Spinner, Form } from "react-bootstrap";
+import { Container, Row, Col, Card, Button, Badge, Spinner, Modal as BootstrapModal, Form } from "react-bootstrap";
 import { useHistory } from "react-router-dom";
 import ApiService from "service/ApiService";
 
@@ -27,7 +27,7 @@ const modalContentStyle = {
   boxShadow: "0 10px 25px rgba(0,0,0,.2)",
   animation: "modalFadeIn 0.3s ease-out",
 };
-//a
+
 // Add default profile icon styles
 const defaultProfileStyle = {
   height: '200px',
@@ -136,7 +136,7 @@ styleSheet.textContent = `
 `;
 document.head.appendChild(styleSheet);
 
-function BookingModal({ show, onClose, therapist, onConfirm }) {
+function BookingModal({ show, onClose, nutritionist, onConfirm }) {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [notes, setNotes] = useState("");
@@ -192,9 +192,9 @@ function BookingModal({ show, onClose, therapist, onConfirm }) {
 
       await ApiService.createAppointment(
         currentUser.id,
-        therapist.id,
+        nutritionist.id,
         formattedDate,
-        'THERAPY',
+        'NUTRITION',
         notes
       );
 
@@ -222,11 +222,11 @@ function BookingModal({ show, onClose, therapist, onConfirm }) {
   return (
     <div style={modalOverlayStyle} onClick={onClose}>
       <div style={modalContentStyle} onClick={(e) => e.stopPropagation()}>
-        <h4 className="mb-4">Book Physical Therapy Session</h4>
+        <h4 className="mb-4">Book Nutrition Session</h4>
         
-        {therapist && (
+        {nutritionist && (
           <div className="mb-4">
-            <h6>Booking with: {therapist.firstname} {therapist.lastname}</h6>
+            <h6>Booking with: {nutritionist.firstname} {nutritionist.lastname}</h6>
             <div className="alert alert-info">
               <p className="mb-1"><strong>Session Cost:</strong> $50</p>
               <p className="mb-0"><strong>Your Balance:</strong> ${userCredits}</p>
@@ -268,7 +268,7 @@ function BookingModal({ show, onClose, therapist, onConfirm }) {
             <Form.Control
               as="textarea"
               rows={3}
-              placeholder="Add any special notes or requirements for your session..."
+              placeholder="Add any special notes or dietary requirements for your session..."
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               disabled={loading}
@@ -313,40 +313,10 @@ function BookingModal({ show, onClose, therapist, onConfirm }) {
   );
 }
 
-// Add TherapistProfileModal component
-function TherapistProfileModal({ show, onClose, therapist }) {
-  const [reviews, setReviews] = useState([]);
-  const [averageRating, setAverageRating] = useState(0);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (show && therapist) {
-      // Reviews removed from backend — do not attempt to load
-    }
-  }, [show, therapist]);
-
-  const loadReviews = async () => {
-    // Reviews are disabled in backend; show no reviews
-    setAverageRating(0);
-    setReviews([]);
-    setLoading(false);
-  };
-
-  const StarRating = ({ value, readOnly }) => {
-    const stars = [1, 2, 3, 4, 5];
-    return (
-      <div className="d-flex align-items-center">
-        {stars.map((star) => (
-          <i
-            key={star}
-            className={`fas fa-star mx-1 ${value >= star ? 'text-warning' : 'text-muted'}`}
-          />
-        ))}
-      </div>
-    );
-  };
-
-  if (!show || !therapist) return null;
+// Add NutritionistProfileModal component
+function NutritionistProfileModal({ show, onClose, nutritionist }) {
+  // Reviews and rating removed (backend disabled)
+  if (!show || !nutritionist) return null;
 
   return (
     <div style={modalOverlayStyle} onClick={onClose}>
@@ -358,10 +328,10 @@ function TherapistProfileModal({ show, onClose, therapist }) {
         <button className="close-button" onClick={onClose}>×</button>
         
         <div style={imageContainerStyle} className="profile-image-container">
-          {therapist.image ? (
+          {nutritionist.image ? (
             <img 
-              src={therapist.image}
-              alt={`${therapist.firstname} ${therapist.lastname}`}
+              src={nutritionist.image}
+              alt={`${nutritionist.firstname} ${nutritionist.lastname}`}
               style={{ 
                 width: '100%',
                 height: '100%',
@@ -385,18 +355,18 @@ function TherapistProfileModal({ show, onClose, therapist }) {
         </div>
 
         <h3 className="text-center mb-4" style={{ color: '#0d6efd' }}>
-          {therapist.firstname} {therapist.lastname}
+          {nutritionist.firstname} {nutritionist.lastname}
         </h3>
 
-        
-          
-        {therapist.description && (
+        {/* Rating/Reviews removed (backend disabled) */}
+
+        {nutritionist.description && (
           <div style={sectionStyle} className="profile-section">
             <h6>
               <i className="fas fa-comment-medical me-2"></i>
               Description
             </h6>
-            <p>{therapist.description}</p>
+            <p>{nutritionist.description}</p>
           </div>
         )}
 
@@ -405,48 +375,48 @@ function TherapistProfileModal({ show, onClose, therapist }) {
             <i className="fas fa-address-card" style={{ marginRight: '20px' }}></i>
             Contact Information
           </h6>
-          <p><strong>Email:</strong> {therapist.email}</p>
-          {therapist.phoneNumber && <p><strong>Phone:</strong> {therapist.phoneNumber}</p>}
-          {therapist.address && <p><strong>Address:</strong> {therapist.address}</p>}
+          <p><strong>Email:</strong> {nutritionist.email}</p>
+          {nutritionist.phoneNumber && <p><strong>Phone:</strong> {nutritionist.phoneNumber}</p>}
+          {nutritionist.address && <p><strong>Address:</strong> {nutritionist.address}</p>}
         </div>
 
-        {therapist.specialization && (
+        {nutritionist.specialization && (
           <div style={sectionStyle} className="profile-section">
             <h6>
               <i className="fas fa-star me-2"></i>
               Specialization
             </h6>
-            <p>{therapist.specialization}</p>
+            <p>{nutritionist.specialization}</p>
           </div>
         )}
 
-        {therapist.experience && (
+        {nutritionist.experience && (
           <div style={sectionStyle} className="profile-section">
             <h6>
               <i className="fas fa-briefcase me-2"></i>
               Experience
             </h6>
-            <p>{therapist.experience}</p>
+            <p>{nutritionist.experience}</p>
           </div>
         )}
 
-        {therapist.education && (
+        {nutritionist.education && (
           <div style={sectionStyle} className="profile-section">
             <h6>
               <i className="fas fa-graduation-cap me-2"></i>
               Education
             </h6>
-            <p>{therapist.education}</p>
+            <p>{nutritionist.education}</p>
           </div>
         )}
 
-        {therapist.about && (
+        {nutritionist.about && (
           <div style={sectionStyle} className="profile-section">
             <h6>
               <i className="fas fa-user" style={{ marginRight: '20px' }}></i>
               About
             </h6>
-            <p>{therapist.about}</p>
+            <p>{nutritionist.about}</p>
           </div>
         )}
 
@@ -469,17 +439,17 @@ function TherapistProfileModal({ show, onClose, therapist }) {
   );
 }
 
-function TherapistSelection() {
+function NutritionistSelection() {
   const history = useHistory();
-  const [therapists, setTherapists] = useState([]);
+  const [nutritionists, setNutritionists] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [showProfileModal, setShowProfileModal] = useState(false);
-  const [selectedTherapist, setSelectedTherapist] = useState(null);
+  const [selectedNutritionist, setSelectedNutritionist] = useState(null);
   const [userCredits, setUserCredits] = useState(0);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filteredTherapists, setFilteredTherapists] = useState([]);
+  const [filteredNutritionists, setFilteredNutritionists] = useState([]);
 
   useEffect(() => {
     const token = ApiService.getAccessToken();
@@ -487,37 +457,35 @@ function TherapistSelection() {
       history.push("/login");
       return;
     }
-    loadTherapists();
+    loadNutritionists();
     loadUserCredits();
   }, [history]);
 
   useEffect(() => {
-    // Filter therapists based on search query
-    const filtered = therapists.filter(therapist => 
-      therapist.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      therapist.lastname.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      therapist.specialization?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      therapist.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    // Filter nutritionists based on search query
+    const filtered = nutritionists.filter(nutritionist => 
+      nutritionist.firstname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      nutritionist.lastname.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      nutritionist.specialization?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      nutritionist.description?.toLowerCase().includes(searchQuery.toLowerCase())
     );
-    setFilteredTherapists(filtered);
-  }, [searchQuery, therapists]);
+    setFilteredNutritionists(filtered);
+  }, [searchQuery, nutritionists]);
 
-  const loadTherapists = async () => {
+  const loadNutritionists = async () => {
     try {
       setLoading(true);
-      const response = await ApiService.getAllTherapists();
-      console.log('Therapists response:', response);
-      
-      setTherapists(response || []);
+      const response = await ApiService.getAllNutritionists();
+      setNutritionists(response || []);
       setError(null);
     } catch (err) {
-      console.error("Error loading therapists:", err);
+      console.error("Error loading nutritionists:", err);
       if (err.response?.status === 403) {
         setError("Access denied. Please make sure you are logged in.");
       } else if (err.response?.status === 401) {
         setError("Session expired. Please login again.");
       } else {
-        setError("Failed to load therapists. Please try again later.");
+        setError("Failed to load nutritionists. Please try again later.");
       }
     } finally {
       setLoading(false);
@@ -538,28 +506,27 @@ function TherapistSelection() {
       localStorage.clear();
       history.push("/login");
     } else {
-      loadTherapists();
+      loadNutritionists();
     }
   };
 
-  const handleBooking = (therapist) => {
-    setSelectedTherapist(therapist);
+  const handleBooking = (nutritionist) => {
+    setSelectedNutritionist(nutritionist);
     setShowBookingModal(true);
   };
 
   const handleConfirmBooking = async () => {
-    // Reload therapists to refresh any availability changes
-    await loadTherapists();
+    await loadNutritionists();
+    await loadUserCredits();
   };
 
-  const handleViewProfile = (therapist) => {
-    // Check if user is logged in
+  const handleViewProfile = (nutritionist) => {
     const token = ApiService.getAccessToken();
     if (!token) {
       history.push("/login");
       return;
     }
-    setSelectedTherapist(therapist);
+    setSelectedNutritionist(nutritionist);
     setShowProfileModal(true);
   };
 
@@ -598,8 +565,8 @@ function TherapistSelection() {
         <Col md="12">
           <Card>
             <Card.Header>
-              <Card.Title as="h4">Select a Therapist</Card.Title>
-              <p className="card-category">Choose a therapist to book an appointment</p>
+              <Card.Title as="h4">Select a Nutritionist</Card.Title>
+              <p className="card-category">Choose a nutritionist to book an appointment</p>
             </Card.Header>
             <Card.Body>
               {/* Search Bar */}
@@ -623,19 +590,19 @@ function TherapistSelection() {
                 </div>
               ) : error ? (
                 <div className="alert alert-danger">{error}</div>
-              ) : filteredTherapists.length === 0 ? (
+              ) : filteredNutritionists.length === 0 ? (
                 <div className="text-center p-5">
-                  <p>No therapists found matching your search.</p>
+                  <p>No nutritionists found matching your search.</p>
                 </div>
               ) : (
                 <Row>
-                  {filteredTherapists.map((therapist) => (
-                    <Col md="4" key={therapist.id} className="mb-4">
+                  {filteredNutritionists.map((nutritionist) => (
+                    <Col md="4" key={nutritionist.id} className="mb-4">
                       <Card className="h-100 shadow-sm">
-                        {therapist.image ? (
+                        {nutritionist.image ? (
                           <Card.Img 
                             variant="top" 
-                            src={therapist.image}
+                            src={nutritionist.image}
                             style={{ height: '200px', objectFit: 'cover' }}
                             onError={(e) => {
                               e.target.style.display = 'none';
@@ -645,21 +612,21 @@ function TherapistSelection() {
                         ) : null}
                         <div 
                           style={defaultProfileStyle}
-                          className={therapist.image ? 'd-none' : ''}
+                          className={nutritionist.image ? 'd-none' : ''}
                         >
                           <i className="fas fa-user-md"></i>
                         </div>
                         <Card.Body className="d-flex flex-column">
                           <Card.Title className="d-flex justify-content-between align-items-center">
-                            {`${therapist.firstname} ${therapist.lastname}`}
+                            {`${nutritionist.firstname} ${nutritionist.lastname}`}
                           </Card.Title>
                           <Card.Text>
-                            <strong>Email:</strong> {therapist.email}<br/>
-                            {therapist.phoneNumber && (
-                              <><strong>Phone:</strong> {therapist.phoneNumber}<br/></>
+                            <strong>Email:</strong> {nutritionist.email}<br/>
+                            {nutritionist.phoneNumber && (
+                              <><strong>Phone:</strong> {nutritionist.phoneNumber}<br/></>
                             )}
-                            {therapist.address && (
-                              <><strong>Address:</strong> {therapist.address}<br/></>
+                            {nutritionist.address && (
+                              <><strong>Address:</strong> {nutritionist.address}<br/></>
                             )}
                             <div className="mt-2">
                               <strong>Session Cost:</strong> $50
@@ -669,7 +636,7 @@ function TherapistSelection() {
                             <Button 
                               variant={userCredits >= 50 ? "outline-primary" : "outline-secondary"}
                               className="flex-grow-1"
-                              onClick={() => handleBooking(therapist)}
+                              onClick={() => handleBooking(nutritionist)}
                               disabled={userCredits < 50}
                             >
                               {userCredits >= 50 ? (
@@ -680,7 +647,7 @@ function TherapistSelection() {
                             </Button>
                             <Button 
                               variant="outline-secondary"
-                              onClick={() => handleViewProfile(therapist)}
+                              onClick={() => handleViewProfile(nutritionist)}
                             >
                               View Full Profile
                             </Button>
@@ -699,17 +666,17 @@ function TherapistSelection() {
       <BookingModal
         show={showBookingModal}
         onClose={() => setShowBookingModal(false)}
-        therapist={selectedTherapist}
+        nutritionist={selectedNutritionist}
         onConfirm={handleConfirmBooking}
       />
 
-      <TherapistProfileModal
+      <NutritionistProfileModal
         show={showProfileModal}
         onClose={() => setShowProfileModal(false)}
-        therapist={selectedTherapist}
+        nutritionist={selectedNutritionist}
       />
     </Container>
   );
 }
 
-export default TherapistSelection; 
+export default NutritionistSelection;

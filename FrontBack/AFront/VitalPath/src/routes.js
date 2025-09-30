@@ -5,7 +5,7 @@ import Dashboard from "views/Dashboard.js";
 import UserProfile from "views/UserProfile.js";
 import TableList from "views/Terapisti/TableList.js";
 import Typography from "views/User/Typography.js";
-import Notifications from "views/Notifications.js";
+
 import AdminDashboard from "views/Admin/AdminDashboard.js";
 import UserDashboard from "views/User/UserDashboard.js";
 import TherapistSelection from "views/User/TherapistSelection.js";
@@ -184,13 +184,7 @@ const nutritionistRoutes = [
     component: UserProfile,
     layout: "/admin",
   },
-  {
-    path: "/professional-reviews",
-    name: "Patient Reviews",
-    icon: "nc-icon nc-favourite-28",
-    // component: ProfessionalReviews, // removed — backend no longer provides review endpoints
-    // layout: "/admin",
-  }
+  
 ];
 
 // =====================================================
